@@ -22,6 +22,8 @@ const books = [
     }
 ]
 
+let id = 3;
+
 server.set('views', './src/views');
 server.set('view engine', 'ejs');
 
@@ -31,11 +33,31 @@ server.use(bodyParser.urlencoded({ extended: false }));
 
 server.use(bodyParser.json());
 
-server.get("/inventory", (res, req) => {
-    res.Render("inventory", {booksData: books})
+server.get("/inventory", (req, res) => {
+    res.render("inventory", {booksData: books})
+})
+server.get("/api/inventory", (req, res) => {
+    res.json(books)
 })
 
-server.delete("/books/:id", (res, req) => {
+server.post("/add-book", (req, res) => {
+    let book = req.body;
+    id++;
+    book.id = id + ''
+    books.push(book)
+    res.json(req.body)
+})
+
+server.put("/books/:id", (req, res) => {
+    const id = req.params.id;
+    const bookIndex = books.findIndex(book => book.id === id);
+
+    let newBooks = books.slice(bookIndex, 1, req.body)
+    console.log(newBooks)
+    res.send(`you added a new book`)
+})
+
+server.delete("/books/:id", (req, res) => {
     const id = req.params.id;
     const bookIndex = books.find(book => book.id === id)
 
